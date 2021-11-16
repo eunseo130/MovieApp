@@ -14,8 +14,8 @@ class Genre(models.Model):
     name = models.CharField(max_length=50)
 
 class Movie(models.Model):
-    actors = models.ManyToManyField(Actor)
-    crews = models.ManyToManyField(Crew)
+    actors = models.ManyToManyField(Actor, related_name="movies")
+    crews = models.ManyToManyField(Crew, related_name="movies")
     title = models.CharField(max_length=100)
     overview = models.TextField()
     poster_path = models.TextField()
@@ -25,5 +25,5 @@ class Movie(models.Model):
     vote_count = models.IntegerField()
     runtime = models.IntegerField()
     revenue = models.IntegerField()
-    genres = models.ManyToManyField(Genre)
+    genres = models.ManyToManyField(Genre, related_name="movies")
     like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="movie_like") 
