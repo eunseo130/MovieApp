@@ -16,13 +16,13 @@ def signin(request):
             'error': '비밀번호가 일치하지 않습니다.'
         }
         return Response(error_message, status=status.HTTP)
-    print(request.data)
+    
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
         user = serializer.save()
         user.set_password(password)
         user.save()
-        return Response(data=serializer.data)
+        return Response(data=serializer.data, status=status.HTTP_201_CREATED)
 
 
 def profile(request, username):
