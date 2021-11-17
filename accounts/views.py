@@ -8,7 +8,7 @@ from .serializers import UserSerializer
 User = get_user_model()
 
 @api_view(['POST'])
-def signup(request):
+def signin(request):
     password = request.data.get('password')
     password_confirm = request.data.get('passwordConfirm')
     if password != password_confirm:
@@ -16,6 +16,7 @@ def signup(request):
             'error': '비밀번호가 일치하지 않습니다.'
         }
         return Response(error_message, status=status.HTTP)
+    print(request.data)
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
         user = serializer.save()
