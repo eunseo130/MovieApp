@@ -4,20 +4,39 @@ from community.models import Comment, Article
 from movies.models import Movie
 
 # Create your views here.
+class CommentSerializer(serializers.ModelSerializer):
+    author = serializers.ReadOnlyField(source='author.nickname')
+    class Meta:
+        model = Comment
+        fields = ('id', 'content', 'created_at', 'updated_at', 'author')
+        read_only_fields = ('author',)
+
+
+class CommentListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Article
+        fields = ('id', 'content')
+
+
 class ArticleListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
-        fields = ('pk', 'title')
+        fields = ('id', 'title', 'content',)
 
 
 class ArticleSerializer(serializers.ModelSerializer):
-    class MovieSerializer(serializers.ModelSerializer):
+    class CommentSerializer(serializers.ModelSerializer):
         class Meta:
-            model = Movie
-            fields = ('pk', 'title')
-    
-    movie_set = MovieSerializer(many=True, read_only=True)
+            model = Comment
+            fields = ('id', 'content',)
+
+
+    comment_set = CommentSerializer(many=True, read_only=True)
+    author = serializers.ReadOnlyField(source='author.nickname')
 
     class Meta:
         model = Article
-        fields = ('pk', 'title', 'content', 'movie_set',)
+        fields = ('title', 'content', 'comment_set', 'author', 'movie_title', 'created_at', 'updated_at', 'id',)
+        read_only_fields = ('author', 'like_users',)
+
+

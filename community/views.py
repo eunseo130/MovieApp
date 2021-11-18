@@ -1,34 +1,100 @@
-from django.shortcuts import get_object_or_404, render
+from django.http.response import HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404, render, get_list_or_404
 
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
 
-from community.serializers import ArticleSerializer
-from .models import Article
+from community.serializers import ArticleSerializer, CommentSerializer, ArticleListSerializer, CommentListSerializer
+from .models import Article, Comment
 
-# Create your views here.
+# Create your views here.\
 @api_view(['GET', 'POST'])
-def article_list_create(request):
+@permission_classes([AllowAny])
+def article_list(request):
     if request.method == 'GET':
-        articles = Article.objects.all()
-        serializer = ArticleSerializer(articles, many=True)
+        articles = get_list_or_404(Article)
+        serializer = ArticleListSerializer(articles, many=True) 
         return Response(serializer.data)
-    else:
+    
+    elif request.method == 'POST':
         serializer = ArticleSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            serializer.save()
+            serializer.save(author=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-@api_view(['PUT', 'DELETE'])
-def article_update_delete(request, article_pk):
+@api_view(['GET', 'DELETE', 'PUT'])
+@permission_classes([AllowAny])
+def article_detail(request, article_pk):
     article = get_object_or_404(Article, pk=article_pk)
-    if request.method == 'PUT':
+    if request.method == 'GET':
+        serializer = ArticleSerializer(article)
+        return Response(serializer.data)
+
+    elif request.method == 'DELETE':
+        article.delete()
+        data = {
+            'delete': f'게시글 {article_pk}번이 삭제되었습니다.'
+        }
+        return Response(data, status=status.HTTP_204_NO_CONTENT)
+
+    elif request.method == 'PUT':
         serializer = ArticleSerializer(article, data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)
-    else:
-        article.delete()
-        return Response({'id':article_pk}, status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['GET', 'POST'])
+@permission_classes([AllowAny])
+def comment_list(request, article_pk):
+    article = get_object_or_404(Article, pk=article_pk)
+    if request.method == 'GET':
+        comments = get_list_or_404(Comment)
+        serializer = CommentListSerializer(comments, many=True) 
+        return Response(serializer.data)
+    
+    elif request.method == 'POST':
+        serializer = CommentSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save(article=article, author=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+@api_view(['GET', 'DELETE'])
+@permission_classes([AllowAny])
+def comment_detail(request, comment_pk):
+    comment = get_object_or_404(Comment, pk=comment_pk)
+    if request.method == 'GET':
+        serializer = CommentSerializer(comment)
+        return Response(serializer.data)
+
+    elif request.method == 'DELETE':
+        comment.delete()
+        data = {
+            'delete': f'댓글 {comment_pk}번이 삭제되었습니다.'
+        }
+        return Response(data, status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def like(request, article_pk):
+    if request.user.is_authenticated:
+        article = get_object_or_404(Article, pk=article_pk)
+        user = request.user
+        if article.like_users.filter(pk=user.pk).exists():
+            article.like_users.remove(user)
+            liked = False
+        else:
+            article.like_users.add(user)
+            liked = True
+        like_count = article.like_users.count()
+        context = {
+            'liked': liked,
+            'like_count': like_count,
+        }
+        return JsonResponse(context)
+    return HttpResponse(status=status.HTTP_401_UNAUTHORIZED)
