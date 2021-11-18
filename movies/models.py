@@ -1,5 +1,7 @@
 from django.db import models
 from django.conf import settings
+from django.db.models.deletion import CASCADE
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Actor(models.Model):
     name = models.CharField(max_length=100)
@@ -26,4 +28,10 @@ class Movie(models.Model):
     runtime = models.IntegerField()
     revenue = models.IntegerField()
     genres = models.ManyToManyField(Genre, related_name="movies")
-    like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="movie_like") 
+    like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="movie_like")
+    vote_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="vote_movies", through='Vote', through_fields=('movie', 'user'))
+
+class Vote(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=CASCADE)
+    movie = models.ForeignKey(Movie, on_delete=CASCADE)
+    score = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(10)])
