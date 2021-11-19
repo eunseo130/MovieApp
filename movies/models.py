@@ -19,6 +19,7 @@ class Crew(models.Model):
 
 class Genre(models.Model):
     name = models.CharField(max_length=50)
+    genre_id = models.IntegerField()
 
     def __str__(self):
         return self.name
@@ -31,8 +32,8 @@ class Movie(models.Model):
     popularity = models.FloatField()
     vote_average = models.FloatField()
     vote_count = models.IntegerField()
-    runtime = models.IntegerField()
-    revenue = models.IntegerField()
+    runtime = models.IntegerField(null=True)
+    revenue = models.IntegerField(null=True)
     actors = models.ManyToManyField(Actor, related_name="movies")
     crews = models.ManyToManyField(Crew, related_name="movies")
     genres = models.ManyToManyField(Genre, related_name="movies")
