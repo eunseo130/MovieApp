@@ -137,7 +137,7 @@ def load_movies(request):
             except:
                 continue
             try:
-                movie.poster_path = m['poster_path']
+                movie.poster_path = TMDB_IMG + m['poster_path']
             except:
                 continue
             try:
