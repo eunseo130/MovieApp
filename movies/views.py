@@ -1,5 +1,4 @@
 import requests
-import json
 from django.shortcuts import get_list_or_404, get_object_or_404, HttpResponse, render
 
 from rest_framework import status
@@ -11,22 +10,16 @@ from rest_framework.permissions import AllowAny
 from rest_framework.decorators import authentication_classes
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
-from .models import Movie, Vote, Genre
+from .models import Actor, Crew, Keyword, Movie, Vote, Genre
 from .serializers import MovieListSerializer, MovieSerializer, VoteSerializer
 
 # Create your views here.
-@api_view(['GET', 'POST'])
+@api_view(['GET'])
 @permission_classes([AllowAny])
 def movies_list_create(request):
-    if request.method == 'GET':
-        movies = Movie.objects.all()
-        serializer = MovieListSerializer(movies, many=True)
-        return Response(serializer.data)
-    elif request.method == 'POST':
-        serializer = MovieSerializer(request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+    movies = Movie.objects.all()
+    serializer = MovieListSerializer(movies, many=True)
+    return Response(serializer.data)
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -89,7 +82,7 @@ def movies_vote_update_delete(request, movie_pk, vote_pk):
 
 
 @api_view(['GET'])
-def get_movies(request):
+def load_movies(request):
     # KOBIS_URL = 'http://www.kobis.or.kr/kobisopenapi/webservice/rest/'
     # KOBIS_KEY = '25d9f0ae55ce925524fd90e423bcf7ca'
 
@@ -108,7 +101,6 @@ def get_movies(request):
 # print(len(res))
 
 # TMDB
-    movie_info = []
     genres = requests.get(TMDB_URL + 'genre/movie/list' + f'?api_key={TMDB_KEY}' + '&language=ko-kr').json().get('genres')
     for genre in genres:
         context = {
@@ -117,25 +109,101 @@ def get_movies(request):
         }
         genre, created = Genre.objects.get_or_create(**context)
     
-    for i in range(10):
+
+    for i in range(1):
         movies = requests.get(TMDB_URL + 'movie/popular' + f'?api_key={TMDB_KEY}&page={i+1}' + '&language=ko-kr').json().get('results')
     
-        for movie in movies:
-            context = {
-                'title': movie['title'],
-                'overview': movie['overview'],
-                'poster_path': TMDB_IMG + movie['poster_path'],
-                'release_date': movie['release_date'],
-                'popularity': movie['popularity'],
-                'vote_average': movie['vote_average'],
-                'vote_count': movie['vote_count'],
-                # 'runtime': movie['runtime'],
-                # 'revenue': movie['revenue'],\
-            }
-            movie_complete, created = Movie.objects.get_or_create(**context)
+        for m in movies:
+            movie = Movie()
+            try:
+                if Movie.objects.filter(movie_id=m['id']).exists() == False:
+                    movie.movie_id = m['id']
+                else:
+                    continue
+            except:
+                continue
+            try:
+                movie.title = m['title']
+            except:
+                continue
+            try:
+                movie.overview = m['overview']
+            except:
+                continue
+            try:
+                if m['release_date'] == '':
+                    continue
+                movie.release_date = m['release_date']
+            except:
+                continue
+            try:
+                movie.poster_path = m['poster_path']
+            except:
+                continue
+            try:
+                movie.popularity = m['popularity']
+            except:
+                continue
+            try:
+                movie.vote_average = m['vote_average']
+            except:
+                continue
+            try:
+                movie.vote_count = m['vote_count']
+            except:
+                continue
+            movie.save()
+            # context = {
+            #     'title': movie['title'],
+            #     'overview': movie['overview'],
+            #     'poster_path': TMDB_IMG + movie['poster_path'],
+            #     # 'release_date': movie['release_date'],
+            #     'popularity': movie['popularity'],
+            #     'vote_average': movie['vote_average'],
+            #     'vote_count': movie['vote_count'],
+            # }
+            # if context['release_date'] == '':
+            #     context['release_date'] = '1111-11-11'
+            # movie_complete, created = Movie.objects.get_or_create(**context)
             # genre_dict = Genre.objects.all()
             # print(genre_dict)
-            for genre_id in movie['genre_ids']:
+            # try:
+            #     movie_complete.release_date = movie['release_date']
+            # except:
+            #     continue
+            for genre_id in m['genre_ids']:
                 genre = Genre.objects.get(genre_id=genre_id)
-                movie_complete.genres.add(genre)
+                movie.genres.add(genre)
+            movie_id = movie.movie_id
+            
+            keywords = requests.get(TMDB_URL + f'/movie/{movie_id}/keywords' + f'?api_key={TMDB_KEY}').json().get('keywords')
+            for keyword in keywords:
+                context = {
+                    'keyword_id': keyword['id'],
+                    'name': keyword['name']
+                }
+                keyword, created = Keyword.objects.get_or_create(**context)
+                movie.keywords.add(keyword)
+
+            credits = requests.get(TMDB_URL + f'/movie/{movie_id}/credits' + f'?api_key={TMDB_KEY}').json().get('cast')
+            for credit in credits:
+                if credit['known_for_department'] == 'Acting':
+                    context = {
+                        'actor_id': credit['id'],
+                        'name': credit['original_name'],
+                        'gender': credit['gender']
+                    }
+                    actor, created = Actor.objects.get_or_create(**context)
+                    movie.actors.add(actor)
+                elif credit['known_for_department'] == 'Directing' or credit['known_for_department'] == 'Writing':
+                    context = {
+                        'crew_id': credit['id'],
+                        'name': credit['original_name'],
+                        'gender': credit['gender'],
+                        'job': credit['known_for_department']
+                    }
+                    crew, created = Crew.objects.get_or_create(**context)
+                    movie.crews.add(crew)
+                else:
+                    pass
     return Response()
