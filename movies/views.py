@@ -1,5 +1,6 @@
 import requests
 from django.shortcuts import get_list_or_404, get_object_or_404, HttpResponse, render
+from django.http.response import JsonResponse
 
 from rest_framework import status
 import rest_framework
@@ -207,3 +208,24 @@ def load_movies(request):
                 else:
                     pass
     return Response()
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def movie_like(request, movie_pk):
+    if request.user.is_authenticated:
+        movie = get_object_or_404(Movie, pk=movie_pk)
+        user = request.user
+        if movie.like_users.filter(pk=user.pk).exists():
+            movie.like_users.remove(user)
+            liked = False
+        else:
+            movie.like_users.add(user)
+            liked = True
+        like_count = movie.like_users.count()
+        context = {
+            'liked': liked,
+            'like_count': like_count,
+        }
+        return JsonResponse(context)
+    return HttpResponse(status=status.HTTP_401_UNAUTHORIZED)
