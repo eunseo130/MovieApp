@@ -15,14 +15,18 @@ class CommentSerializer(serializers.ModelSerializer):
 class CommentListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
-        fields = ('id', 'content')
+        fields = ('id', 'content', 'author')
 
 
 class ArticleListSerializer(serializers.ModelSerializer):
+    class CommentSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Comment
+            fields = ('id', 'content',)
+    comment_set = CommentSerializer(many=True, read_only=True)
     class Meta:
         model = Article
-        fields = ('id', 'title', 'created_at', 'updated_at', 'author', 'movie_title')
-
+        fields = '__all__'
 
 class ArticleSerializer(serializers.ModelSerializer):
     class CommentSerializer(serializers.ModelSerializer):
