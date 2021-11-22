@@ -45,6 +45,7 @@ class Movie(models.Model):
     popularity = models.FloatField()
     vote_average = models.FloatField()
     vote_count = models.IntegerField()
+    backdrop_path = models.TextField(null=True, blank=True)
     actors = models.ManyToManyField(Actor, related_name="movies")
     crews = models.ManyToManyField(Crew, related_name="movies")
     genres = models.ManyToManyField(Genre, related_name="movies")

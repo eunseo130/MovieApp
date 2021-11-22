@@ -8,5 +8,6 @@ urlpatterns = [
     path('<int:movie_pk>/vote/', views.movies_vote_create, name='movies_vote_create'),
     path('<int:movie_pk>/vote/<int:vote_pk>', views.movies_vote_update_delete, name='movies_vote_update_delete'),
     path('load_movies/', views.load_movies, name='load_movies'),
-    path('like/<int:movie_pk>/', views.movie_like, name='movie_like')
+    path('like/<int:movie_pk>/', views.movie_like, name='movie_like'),
+    path('recommend/<str:select>/', views.recommend, name='recommend')
 ]
