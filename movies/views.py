@@ -283,142 +283,368 @@ def recommend(request, select):
         # movies = Movie.objects.all()
         genres = Genre.objects.all()
         movie_list = []
-        if select == '양식':
-            for genre in genres:
-                if genre.name == '액션':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == '모험':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == '애니메이션':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == '판타지':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == 'SF':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == '서부':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == '로맨스':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == '음악':
-                    movie_list = movie_list + list(genre.movies.all())
-        elif select == '중식':
-            for genre in genres:
-                if genre.name == '역사':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == '드라마':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == '범죄':
-                    movie_list = movie_list + list(genre.movies.all())
-        elif select == '한식':
-            for genre in genres:
-                if genre.name == '가족':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == '드라마':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == '코미디':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == '로맨스':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == '음악':
-                    movie_list = movie_list + list(genre.movies.all())
-        elif select == '일식':
-            for genre in genres:
-                if genre.name == '가족':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == '드라마':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == '판타지':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == '애니메이션':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == '공포':
-                    movie_list = movie_list + list(genre.movies.all())
-        elif select == '분식':
-            for genre in genres:
-                if genre.name == '가족':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == '미스터리':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == 'TV영화':
-                    movie_list = movie_list + list(genre.movies.all())    
-        elif select == '간식':
-            for genre in genres:
-                if genre.name == '스릴러':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == '다큐멘터리':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == '코미디':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == '애니메이션':
-                    movie_list = movie_list + list(genre.movies.all())  
-        elif select == '면류':
-            for genre in genres:
-                if genre.name == '모험':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == '음악':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == '미스터리':
-                    movie_list = movie_list + list(genre.movies.all())
-        elif select == '빵':
-            for genre in genres:
-                if genre.name == '서부':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == '액션':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == '드라마':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == '로맨스':
-                    movie_list = movie_list + list(genre.movies.all())  
-        elif select == '패스트푸드':
-            for genre in genres:
-                if genre.name == 'SF':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == 'TV영화':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == '스릴러':
-                    movie_list = movie_list + list(genre.movies.all())
-        elif select == '혼술':
-            for genre in genres:
-                if genre.name == '전쟁':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == '범죄':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == '액션':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == '모험':
-                    movie_list = movie_list + list(genre.movies.all()) 
-                elif genre.name == '판타지':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == 'SF':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == '스릴러':
-                    movie_list = movie_list + list(genre.movies.all())  
-        elif select == '매운':
-            for genre in genres:
-                if genre.name == '액션':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == '범죄':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == '판타지':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == '공포':
-                    movie_list = movie_list + list(genre.movies.all()) 
-                elif genre.name == '스릴러':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == '전쟁':
-                    movie_list = movie_list + list(genre.movies.all())
-        elif select == '느끼한':
-            for genre in genres:
-                if genre.name == '음악':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == '로맨스':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == '드라마':
-                    movie_list = movie_list + list(genre.movies.all())
-                elif genre.name == '가족':
-                    movie_list = movie_list + list(genre.movies.all()) 
-                elif genre.name == 'TV영화':
-                    movie_list = movie_list + list(genre.movies.all())
+        genre_list = []
+        for s in select:
+            if s == '양식':
+                for genre in genres:
+                    if genre.name == '액션':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '모험':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '애니메이션':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '판타지':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == 'SF':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '서부':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '로맨스':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '음악':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+            if s == '중식':
+                for genre in genres:
+                    if genre.name == '역사':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '드라마':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '범죄':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+            if s == '한식':
+                for genre in genres:
+                    if genre.name == '가족':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '드라마':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '코미디':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '로맨스':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '음악':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+            if s == '일식':
+                for genre in genres:
+                    if genre.name == '가족':
+                        if genre.name not in genre_list:
+                                genre_list.append(genre.name)
+                                movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '드라마':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '판타지':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '애니메이션':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '공포':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+            if s == '분식':
+                for genre in genres:
+                    if genre.name == '가족':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '미스터리':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == 'TV영화':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass 
+            if s == '간식':
+                for genre in genres:
+                    if genre.name == '스릴러':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '다큐멘터리':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '코미디':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '애니메이션':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass 
+            if s == '면류':
+                for genre in genres:
+                    if genre.name == '모험':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '음악':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '미스터리':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+            if s == '빵':
+                for genre in genres:
+                    if genre.name == '서부':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '액션':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '드라마':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '로맨스':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+            if s == '패스트푸드':
+                for genre in genres:
+                    if genre.name == 'SF':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == 'TV영화':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '스릴러':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+            if s == '혼술':
+                for genre in genres:
+                    if genre.name == '전쟁':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '범죄':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '액션':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '모험':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '판타지':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == 'SF':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '스릴러':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass 
+            if s == '매운':
+                for genre in genres:
+                    if genre.name == '액션':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '범죄':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '판타지':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '공포':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass 
+                    elif genre.name == '스릴러':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '전쟁':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+            if s == '느끼한':
+                for genre in genres:
+                    if genre.name == '음악':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '로맨스':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '드라마':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == '가족':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
+                    elif genre.name == 'TV영화':
+                        if genre.name not in genre_list:
+                            genre_list.append(genre.name)
+                            movie_list = movie_list + list(genre.movies.all())
+                        else:
+                            pass
 
         recommended_movies = random.sample(movie_list, 10)
     return HttpResponse(recommended_movies)
