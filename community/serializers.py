@@ -13,8 +13,9 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class CommentListSerializer(serializers.ModelSerializer):
+    author = serializers.ReadOnlyField(source='author.nickname')
     class Meta:
-        model = Article
+        model = Comment
         fields = ('id', 'content', 'author')
 
 

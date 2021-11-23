@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from movies.models import Movie, Actor, Crew, Genre, Vote
+from movies.models import Movie, Actor, Crew, Genre, Vote, Moviecomment, Review
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -11,12 +11,42 @@ class MovieListSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class CommentSerializer(serializers.ModelSerializer):
+    author = serializers.ReadOnlyField(source='author.nickname')
+    class Meta:
+        model = Moviecomment
+        fields = ('id', 'content', 'created_at', 'updated_at', 'author')
+        read_only_fields = ('author',)
+
+
+class CommentListSerializer(serializers.ModelSerializer):
+    author = serializers.ReadOnlyField(source='author.nickname')
+    class Meta:
+        model = Moviecomment
+        fields = ('id', 'content', 'author')
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    author = serializers.ReadOnlyField(source='author.nickname')
+    class Meta:
+        model = Review
+        fields = ('id', 'title', 'content', 'created_at', 'updated_at', 'author')
+        read_only_fields = ('author',)
+
+
+class ReviewListSerializer(serializers.ModelSerializer):
+    author = serializers.ReadOnlyField(source='author.nickname')
+    class Meta:
+        model = Review
+        fields = ('id', 'content', 'author', 'title',)
+
+
 class MovieSerializer(serializers.ModelSerializer):
 
     class ActorSerializer(serializers.ModelSerializer):
         class Meta:
             model = Actor
-            fields = ('pk', 'name')
+            fields = ('pk', 'name', 'actor_id')
     
     class CrewSerializer(serializers.ModelSerializer):
         class Meta:
@@ -28,6 +58,17 @@ class MovieSerializer(serializers.ModelSerializer):
             model = Genre
             fields = ('pk', 'name')
     
+    class CommentSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Moviecomment
+            fields = ('id', 'content',)
+
+    class ReviewSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Review
+            fields = ('id', 'content', 'created_at', 'updated_at', 'author')
+            read_only_fields = ('author',)
+
     actors = ActorSerializer(many=True, read_only=True)
     crews = CrewSerializer(many=True, read_only=True)
     genres = GenreSerializer(many=True, read_only=True)
@@ -56,3 +97,4 @@ class VoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vote
         fields = '__all__'
+

@@ -73,4 +73,19 @@ class Vote(models.Model):
         return f'{self.user} vote to {self.movie}'
 
 
-    
+class Moviecomment(models.Model):
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name="movie")
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="movie_comment_author")
+
+
+class Review(models.Model):
+    title = models.CharField(max_length=50)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name="review_movie")
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="review_author")
+    like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="review_like")

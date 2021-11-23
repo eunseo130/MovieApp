@@ -12,8 +12,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework.decorators import authentication_classes
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
-from .models import Actor, Crew, Keyword, Movie, Vote, Genre
-from .serializers import MovieListSerializer, MovieSerializer, VoteSerializer
+from .models import Actor, Crew, Keyword, Movie, Vote, Genre, Moviecomment, Review
+from .serializers import MovieListSerializer, MovieSerializer, VoteSerializer, CommentSerializer, CommentListSerializer, ReviewSerializer, ReviewListSerializer
 
 # Create your views here.
 @api_view(['GET'])
@@ -24,26 +24,12 @@ def movies_list_create(request):
     return Response(serializer.data)
 
 
-@api_view(['GET', 'PUT', 'DELETE'])
+@api_view(['GET'])
 @permission_classes([AllowAny])
-def movies_detail_update_delete(request, movie_pk):
-
-    movie = get_object_or_404(Movie, pk=movie_pk)
-    if request.method == 'GET': 
-        serializer = MovieSerializer(movie)
-        return Response(serializer.data)
-    else:
-        if not request.user.is_authenticated:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-        
-        if request.method == 'PUT':
-            serializer = MovieSerializer(movie, data=request.data)
-            if serializer.is_valid(raise_exception=True):
-                serializer.save()
-                return Response(serializer.data)
-        elif request.method == 'DELETE':
-            movie.delete()
-            return Response({ 'id': movie_pk }, status=status.HTTP_204_NO_CONTENT)
+def movies_detail(request, movie_pk):
+    movie = get_object_or_404(Movie, movie_id=movie_pk)
+    serializer = MovieSerializer(movie)
+    return Response(serializer.data)
 
 
 
@@ -85,22 +71,10 @@ def movies_vote_update_delete(request, movie_pk, vote_pk):
 
 @api_view(['GET'])
 def load_movies(request):
-    # KOBIS_URL = 'http://www.kobis.or.kr/kobisopenapi/webservice/rest/'
-    # KOBIS_KEY = '25d9f0ae55ce925524fd90e423bcf7ca'
 
     TMDB_URL = 'https://api.themoviedb.org/3/'
     TMDB_KEY = '1e1628fa2029e5e5102664565f10a845'
     TMDB_IMG = 'https://image.tmdb.org/t/p/w500'
-
-
-# 영화진흥위원회
-
-# res = requests.get(
-#     'https://kobis.or.kr/kobisopenapi/webservice/rest/movie/searchMovieList.json?key=25d9f0ae55ce925524fd90e423bcf7ca&openStartDt=1996').json()
-
-# print(res)
-# res = res.get("movieListResult").get("movieList")
-# print(len(res))
 
 # TMDB
     genres = requests.get(TMDB_URL + 'genre/movie/list' + f'?api_key={TMDB_KEY}' + '&language=ko-kr').json().get('genres')
@@ -200,6 +174,46 @@ def load_movies(request):
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
+def movie_comment_create(request, movie_pk):
+    movie = get_object_or_404(Movie, movie_id=movie_pk)
+    serializer = CommentSerializer(data=request.data)
+    if serializer.is_valid(raise_exception=True):
+        serializer.save(movie=movie, author=request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def movie_comment_list(request, movie_pk):
+    movie = get_object_or_404(Movie, movie_id=movie_pk)
+    comments = get_list_or_404(Moviecomment)
+    comment_list = []
+    for comment in comments:
+        if comment.movie.movie_id == movie_pk:
+            comment_list.append(comment)
+    serializer = CommentListSerializer(comment_list, many=True) 
+    return Response(serializer.data)
+
+
+@api_view(['GET', 'DELETE'])
+@permission_classes([AllowAny])
+def movie_comment_detail(request, movie_pk, comment_pk):
+    comment = get_object_or_404(Moviecomment, pk=comment_pk)
+    if request.method == 'GET':
+        serializer = CommentSerializer(comment)
+        return Response(serializer.data)
+
+    elif request.method == 'DELETE':
+        if request.user == comment.author:
+            comment.delete()
+            data = {
+                'delete': f'댓글 {comment_pk}번이 삭제되었습니다.'
+            }
+        return Response(data, status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
 def movie_like(request, movie_pk):
     if request.user.is_authenticated:
         movie = get_object_or_404(Movie, pk=movie_pk)
@@ -217,6 +231,50 @@ def movie_like(request, movie_pk):
         }
         return JsonResponse(context)
     return HttpResponse(status=status.HTTP_401_UNAUTHORIZED)
+
+
+@api_view(['GET', 'POST'])
+@permission_classes([AllowAny])
+def review_list(request, movie_pk):
+    movie = get_object_or_404(Movie, movie_id=movie_pk)
+    if request.method == 'GET':
+        reviews = get_list_or_404(Review)
+        review_list = []
+        for review in reviews:
+            if review.movie.movie_id == movie_pk:
+                review_list.append(review)
+        serializer = ReviewListSerializer(review_list, many=True) 
+        return Response(serializer.data)
+    
+    elif request.method == 'POST':
+        serializer = ReviewSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save(author=request.user, movie=movie)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+@api_view(['GET', 'DELETE', 'PUT'])
+@permission_classes([AllowAny])
+def review_detail(request, review_pk):
+    review = get_object_or_404(Review, pk=review_pk)
+    if request.method == 'GET':
+        serializer = ReviewSerializer(review)
+        return Response(serializer.data)
+
+    elif request.method == 'DELETE':
+        if request.user == review.author:
+            review.delete()
+            data = {
+                'delete': f'게시글 {review_pk}번이 삭제되었습니다.'
+            }
+        return Response(data, status=status.HTTP_204_NO_CONTENT)
+
+    elif request.method == 'PUT':
+        if request.user == review.author:
+            serializer = ReviewSerializer(review, data=request.data)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+        return Response(serializer.data)
 
 
 @api_view(['POST'])
@@ -363,7 +421,7 @@ def recommend(request, select):
                     movie_list = movie_list + list(genre.movies.all())
 
         recommended_movies = random.sample(movie_list, 10)
-        print(recommended_movies)
+    return HttpResponse(recommended_movies)
         # if select == '양식':
         #     for movie in movies:
         #         if ('액션',) in movie.genres.values_list('name'):
@@ -565,4 +623,4 @@ def recommend(request, select):
                 # for genre in genres:
                     
             #     recommend_movie = Movie.objects.filter(genre)
-    return HttpResponse(recommended_movies)
+    
