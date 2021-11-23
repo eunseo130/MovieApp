@@ -278,12 +278,13 @@ def review_detail(request, review_pk):
 
 
 @api_view(['POST'])
-def recommend(request, select):
+def recommend(request):
     if request.user.is_authenticated:
         # movies = Movie.objects.all()
         genres = Genre.objects.all()
         movie_list = []
         genre_list = []
+        select = request.data
         for s in select:
             if s == '양식':
                 for genre in genres:
@@ -647,7 +648,8 @@ def recommend(request, select):
                             pass
 
         recommended_movies = random.sample(movie_list, 10)
-    return HttpResponse(recommended_movies)
+        serial = MovieListSerializer(recommended_movies, many=True)
+    return Response(serial.data)
         # if select == '양식':
         #     for movie in movies:
         #         if ('액션',) in movie.genres.values_list('name'):
