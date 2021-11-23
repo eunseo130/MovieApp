@@ -59,15 +59,7 @@ class Movie(models.Model):
 class Vote(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
-    score = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(10)])
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields = ['user', 'movie'],
-                name='unique vote',
-            ),
-        ]
+    score = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
     
     def __str__(self):
         return f'{self.user} vote to {self.movie}'

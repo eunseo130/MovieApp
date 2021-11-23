@@ -18,7 +18,7 @@ from .serializers import MovieListSerializer, MovieSerializer, VoteSerializer, C
 # Create your views here.
 @api_view(['GET'])
 @permission_classes([AllowAny])
-def movies_list_create(request):
+def movies_list(request):
     movies = Movie.objects.all()
     serializer = MovieListSerializer(movies, many=True)
     return Response(serializer.data)
@@ -38,35 +38,14 @@ def movies_detail(request, movie_pk):
 def movies_vote_create(request, movie_pk):
     if not request.user.is_authenticated:
         return Response(status=status.HTTP_401_UNAUTHORIZED)
-    
-    movie = get_object_or_404(Movie, pk=movie_pk)
-    serializer = VoteSerializer(request.data)
+    movie = get_object_or_404(Movie, movie_id=movie_pk)
+    serializer = VoteSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
-        serializer.save(commit=False)
-        serializer.user = request.user
-        serializer.movie = movie
-        serializer.save()
+        serializer.save(user=request.user, movie=movie)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     else:
         return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
-
-@api_view(['PUT', 'DELETE'])
-@permission_classes([AllowAny])
-def movies_vote_update_delete(request, movie_pk, vote_pk):    
-    if not request.user.is_authenticated:
-        return Response(status=status.HTTP_401_UNAUTHORIZED)    
-    
-    movie = get_object_or_404(Movie, pk=movie_pk)
-    vote = get_object_or_404(Vote, pk=vote_pk)
-    if request.method == 'PUT':
-        serializer = VoteSerializer(vote, data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data)        
-    elif request.method == 'DELETE':
-        vote.delete()
-        return Response({ 'movie_id': movie_pk, 'vote_pk': vote_pk }, status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['GET'])
