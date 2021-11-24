@@ -30,7 +30,7 @@ class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.ReadOnlyField(source='author.nickname')
     class Meta:
         model = Review
-        fields = ('id', 'title', 'content', 'created_at', 'updated_at', 'author')
+        fields = ('id', 'title', 'content', 'created_at', 'updated_at', 'author', 'score')
         read_only_fields = ('author',)
 
 
@@ -38,7 +38,7 @@ class ReviewListSerializer(serializers.ModelSerializer):
     author = serializers.ReadOnlyField(source='author.nickname')
     class Meta:
         model = Review
-        fields = ('id', 'content', 'author', 'title', 'created_at', 'updated_at')
+        fields = ('id', 'content', 'author', 'title', 'created_at', 'updated_at', 'score')
 
 
 class MovieSerializer(serializers.ModelSerializer):

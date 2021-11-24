@@ -24,6 +24,7 @@ class ArticleListSerializer(serializers.ModelSerializer):
         class Meta:
             model = Comment
             fields = ('id', 'content',)
+    author = serializers.ReadOnlyField(source='author.nickname')
     comment_set = CommentSerializer(many=True, read_only=True)
     class Meta:
         model = Article

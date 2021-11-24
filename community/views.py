@@ -1,5 +1,6 @@
 from django.http.response import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render, get_list_or_404
+from django.contrib.auth.decorators import login_required
 
 from rest_framework import status
 from rest_framework.response import Response
@@ -72,26 +73,21 @@ def comment_create(request, article_pk):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-@api_view(['GET', 'DELETE'])
+@api_view(['DELETE'])
 @permission_classes([AllowAny])
-def comment_detail(request, article_pk, comment_pk):
+def comment_delete(request, article_pk, comment_pk):
     comment = get_object_or_404(Comment, pk=comment_pk)
-    if request.method == 'GET':
-        serializer = CommentSerializer(comment)
-        return Response(serializer.data)
-
-    elif request.method == 'DELETE':
-        if request.user == comment.author:
-            comment.delete()
-            data = {
-                'delete': f'댓글 {comment_pk}번이 삭제되었습니다.'
-            }
-        return Response(data, status=status.HTTP_204_NO_CONTENT)
+    if request.user == comment.author:
+        comment.delete()
+        data = {
+            'delete': f'댓글 {comment_pk}번이 삭제되었습니다.'
+        }
+    return Response(data, status=status.HTTP_204_NO_CONTENT)
 
 
 
 @api_view(['POST'])
-@permission_classes([AllowAny])
+@login_required
 def like(request, article_pk):
     if request.user.is_authenticated:
         article = get_object_or_404(Article, pk=article_pk)

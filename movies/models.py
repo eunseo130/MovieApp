@@ -59,7 +59,7 @@ class Movie(models.Model):
 class Vote(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
-    score = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+    score = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(5)])
     
     def __str__(self):
         return f'{self.user} vote to {self.movie}'
@@ -81,3 +81,4 @@ class Review(models.Model):
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name="review_movie")
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="review_author")
     like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="review_like")
+    score = models.FloatField(validators=[MinValueValidator(0), MaxValueValidator(5)])

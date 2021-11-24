@@ -25,11 +25,3 @@ def signup(request):
         user.set_password(password)
         user.save()
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
-
-
-def profile(request, username):
-    profile = get_object_or_404(User, username=username)
-    context = {
-        'profile': profile,
-    }
-    return render(request, 'accounts/profile.html', context)
