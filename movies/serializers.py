@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from movies.models import Movie, Actor, Crew, Genre, Vote, Moviecomment, Review
+from movies.models import Movie, Actor, Crew, Genre, Moviecomment, Review
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -75,26 +75,7 @@ class MovieSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Movie
-        # fields = ('pk', 'title', 'overview', 'poster_path', 'release_date', 'popularity', 'vote_average', 'vote_count', 'rutime', 'revenue', 'actors', 'crews', 'genres')
-        field = '__all__'
-        exclude = ('like_users', 'vote_users')
-
-
-class VoteSerializer(serializers.ModelSerializer):
-    class MovieSerializer(serializers.ModelSerializer):
-        class Meta:
-            model = Movie
-            fields = ('pk', 'title')
-
-    class UserSerializer(serializers.ModelSerializer):
-        class Meta:
-            model = User
-            fields = ('pk', 'nickname')
+        fields = ('pk', 'title', 'overview', 'poster_path', 'release_date', 'popularity', 'vote_average', 'vote_count', 'like_users', 'actors', 'crews', 'genres', 'movie_id')
         
-    movie = MovieSerializer(read_only=True)
-    user = UserSerializer(read_only=True)
 
-    class Meta:
-        model = Vote
-        fields = '__all__'
 

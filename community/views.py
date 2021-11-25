@@ -15,9 +15,13 @@ from .models import Article, Comment
 @permission_classes([AllowAny])
 def article_list(request):
     if request.method == 'GET':
-        articles = get_list_or_404(Article)
-        serializer = ArticleListSerializer(articles, many=True) 
-        return Response(serializer.data)
+        if Article.objects.all():
+            articles = get_list_or_404(Article)
+            serializer = ArticleListSerializer(articles, many=True) 
+            return Response(serializer.data)
+        else:
+            pass
+        return Response()
     
     elif request.method == 'POST':
         serializer = ArticleSerializer(data=request.data)
@@ -54,13 +58,20 @@ def article_detail(request, article_pk):
 @permission_classes([AllowAny])
 def comment_list(request, article_pk):
     article = get_object_or_404(Article, pk=article_pk)
-    comments = get_list_or_404(Comment)
-    comment_list = []
-    for comment in comments:
-        if comment.article.pk == article_pk:
-            comment_list.append(comment)
-    serializer = CommentListSerializer(comment_list, many=True) 
-    return Response(serializer.data)
+    if Comment.objects.all():
+        comments = get_list_or_404(Comment)
+        comment_list = []
+        for comment in comments:
+            if comment.article.pk == article_pk:
+                comment_list.append(comment)
+        if comment_list != []:
+            serializer = CommentListSerializer(comment_list, many=True) 
+            return Response(serializer.data)
+        else:
+            pass
+    else:
+        pass
+    return Response()
     
 
 @api_view(['POST'])

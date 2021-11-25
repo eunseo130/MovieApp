@@ -51,18 +51,9 @@ class Movie(models.Model):
     genres = models.ManyToManyField(Genre, related_name="movies")
     keywords = models.ManyToManyField(Keyword, related_name="movies")
     like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="movie_like")
-    vote_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="vote_movies", through='Vote', through_fields=('movie', 'user'))
 
     def __str__(self):
         return self.title
-
-class Vote(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
-    score = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(5)])
-    
-    def __str__(self):
-        return f'{self.user} vote to {self.movie}'
 
 
 class Moviecomment(models.Model):

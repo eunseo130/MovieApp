@@ -14,8 +14,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework.decorators import authentication_classes
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
-from .models import Actor, Crew, Keyword, Movie, Vote, Genre, Moviecomment, Review
-from .serializers import MovieListSerializer, MovieSerializer, VoteSerializer, CommentSerializer, CommentListSerializer, ReviewSerializer, ReviewListSerializer
+from .models import Actor, Crew, Keyword, Movie, Genre, Moviecomment, Review
+from .serializers import MovieListSerializer, MovieSerializer, CommentSerializer, CommentListSerializer, ReviewSerializer, ReviewListSerializer
 
 # Create your views here.
 @api_view(['GET'])
@@ -32,22 +32,6 @@ def movies_detail(request, movie_pk):
     movie = get_object_or_404(Movie, movie_id=movie_pk)
     serializer = MovieSerializer(movie)
     return Response(serializer.data)
-
-
-
-@api_view(['POST'])
-@permission_classes([AllowAny])
-def movies_vote_create(request, movie_pk):
-    if not request.user.is_authenticated:
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
-    movie = get_object_or_404(Movie, movie_id=movie_pk)
-    serializer = VoteSerializer(data=request.data)
-    if serializer.is_valid(raise_exception=True):
-        serializer.save(user=request.user, movie=movie)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    else:
-        return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-
 
 
 @api_view(['GET'])
@@ -167,13 +151,17 @@ def movie_comment_create(request, movie_pk):
 @permission_classes([AllowAny])
 def movie_comment_list(request, movie_pk):
     movie = get_object_or_404(Movie, movie_id=movie_pk)
-    comments = get_list_or_404(Moviecomment)
-    comment_list = []
-    for comment in comments:
-        if comment.movie.movie_id == movie_pk:
-            comment_list.append(comment)
-    serializer = CommentListSerializer(comment_list, many=True) 
-    return Response(serializer.data)
+    if Moviecomment.objects.all():
+        comments = get_list_or_404(Moviecomment)
+        comment_list = []
+        for comment in comments:
+            if comment.movie.movie_id == movie_pk:
+                comment_list.append(comment)
+        serializer = CommentListSerializer(comment_list, many=True) 
+        return Response(serializer.data)
+    else:
+        pass
+    return Response()
 
 
 @api_view(['DELETE'])
@@ -214,13 +202,17 @@ def movie_like(request, movie_pk):
 def review_list(request, movie_pk):
     movie = get_object_or_404(Movie, movie_id=movie_pk)
     if request.method == 'GET':
-        reviews = get_list_or_404(Review)
-        review_list = []
-        for review in reviews:
-            if review.movie.movie_id == movie_pk:
-                review_list.append(review)
-        serializer = ReviewListSerializer(review_list, many=True) 
-        return Response(serializer.data)
+        if Review.objects.all():
+            reviews = get_list_or_404(Review)
+            review_list = []
+            for review in reviews:
+                if review.movie.movie_id == movie_pk:
+                    review_list.append(review)
+            serializer = ReviewListSerializer(review_list, many=True) 
+            return Response(serializer.data)
+        else:
+            pass
+        return Response()
     
     elif request.method == 'POST':
         serializer = ReviewSerializer(data=request.data)
