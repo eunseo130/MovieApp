@@ -192,7 +192,7 @@ def movie_comment_delete(request, movie_pk, comment_pk):
 @permission_classes([AllowAny])
 def movie_like(request, movie_pk):
     if request.user.is_authenticated:
-        movie = get_object_or_404(Movie, pk=movie_pk)
+        movie = get_object_or_404(Movie, movie_id=movie_pk)
         user = request.user
         if movie.like_users.filter(pk=user.pk).exists():
             movie.like_users.remove(user)
@@ -640,5 +640,40 @@ def review_like(request, review_pk):
             'liked': liked,
             'like_count': like_count,
         }
+        return JsonResponse(context)
+    return HttpResponse(status=status.HTTP_401_UNAUTHORIZED)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_review_like(request, review_pk):
+    if request.user.is_authenticated:
+        review = get_object_or_404(Review, pk=review_pk)
+        if request.user in review.like_users.all():
+            liked = True
+        else:
+            liked = False
+        like_count = review.like_users.count()
+        context = {
+                'liked': liked,
+                'like_count': like_count,
+            }
+        return JsonResponse(context)
+    return HttpResponse(status=status.HTTP_401_UNAUTHORIZED)
+
+
+@api_view(['GET'])
+def get_movie_like(request, movie_pk):
+    if request.user.is_authenticated:
+        movie = get_object_or_404(Movie, movie_id=movie_pk)
+        if request.user in movie.like_users.all():
+            movie_liked = True
+        else:
+            movie_liked = False
+        movie_like_count = movie.like_users.count()
+        context = {
+                'movie_liked': movie_liked,
+                'movie_like_count': movie_like_count,
+            }
         return JsonResponse(context)
     return HttpResponse(status=status.HTTP_401_UNAUTHORIZED)
