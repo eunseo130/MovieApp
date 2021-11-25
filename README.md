@@ -10,7 +10,7 @@
 
 ## 기술 스택🧰
 
-![기술스택](README.assets/기술스택.png)
+![stack](README.assets/stack.png)
 
 ## 프로젝트 컨셉🎬
 
