@@ -196,14 +196,14 @@ def movie_like(request, movie_pk):
         user = request.user
         if movie.like_users.filter(pk=user.pk).exists():
             movie.like_users.remove(user)
-            liked = False
+            movie_liked = False
         else:
             movie.like_users.add(user)
-            liked = True
-        like_count = movie.like_users.count()
+            movie_liked = True
+        movie_like_count = movie.like_users.count()
         context = {
-            'liked': liked,
-            'like_count': like_count,
+            'movie_liked': movie_liked,
+            'movie_like_count': movie_like_count,
         }
         return JsonResponse(context)
     return HttpResponse(status=status.HTTP_401_UNAUTHORIZED)
@@ -249,6 +249,7 @@ def review_detail(request, review_pk):
 
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def recommend(request):
     if request.user.is_authenticated:
         # movies = Movie.objects.all()
@@ -624,7 +625,6 @@ def recommend(request):
 
 
 @api_view(['POST'])
-@login_required
 def review_like(request, review_pk):
     if request.user.is_authenticated:
         review = get_object_or_404(Review, pk=review_pk)
