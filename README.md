@@ -43,16 +43,16 @@
 
 ## ERD
 
-![ERD](../../README.assets/ERD.png)
+![ERD](README.assets/ERD.png)
 
 
 
 ## Flow Diagram
 
-![Flowdiagram](../../README.assets/Flowdiagram.png)
+![Flowdiagram](README.assets/Flowdiagram.png)
 
 
 
 ## UI
 
-![UI](../../README.assets/UI.png)
+![UI](README.assets/UI.png)
